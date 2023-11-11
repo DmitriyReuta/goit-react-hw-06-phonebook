@@ -1,63 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { addContact, deleteContact, setFilter } from './ContactSlice/ContactSlice';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
 import { ContactForm } from './ContactForm/ContactForm';
+import { nanoid } from 'nanoid';
 
-function generateUniqueId(contacts) {
-  return contacts.reduce((maxId, contact) => Math.max(maxId, contact.id), 0) + 1;
+function generateUniqueId() {
+  return nanoid();
 }
 
 export function App() {
-  const [contacts, setContacts] = useState([
-    { id: 1, name: 'Rosie Simpson', number: '459-12-56' },
-    { id: 2, name: 'Hermione Kline', number: '443-89-12' },
-    { id: 3, name: 'Eden Clements', number: '645-17-79' },
-    { id: 4, name: 'Annie Copeland', number: '227-91-26' },
-  ]);
-  const [filter, setFilter] = useState('');
+  const contacts = useSelector((state) => state.contacts.contacts);
+  const filter = useSelector((state) => state.contacts.filter);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const storedContacts = localStorage.getItem('contacts');
     if (storedContacts) {
-      setContacts(JSON.parse(storedContacts));
+      dispatch(addContact(JSON.parse(storedContacts)));
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
   const handleFilterChange = (e) => {
-    setFilter(e.target.value);
+    dispatch(setFilter(e.target.value));
   };
 
   const handleDeleteContact = (contactId) => {
-    setContacts((prevContacts) =>
-      prevContacts.filter((contact) => contact.id !== contactId)
-    );
+    dispatch(deleteContact(contactId));
   };
 
   const handleAddContact = (values, { resetForm }) => {
-    const { name, number } = values;
+  const { name, number } = values;
 
-    if (contacts.some((contact) => contact.name === name)) {
-      alert(`${name} is already in contacts.`);
-      return;
-    }
+  if (contacts.some((contact) => contact.name === name)) {
+    alert(`${name} is already in contacts.`);
+    return;
+  }
 
-    const newContact = {
-      id: generateUniqueId(contacts),
-      name,
-      number,
-    };
-
-    setContacts((prevContacts) => [...prevContacts, newContact]);
-    resetForm();
+  const newContact = {
+    id: generateUniqueId(),
+    name,
+    number,
   };
 
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  dispatch(addContact(newContact));
+  resetForm();
+};
+
+ const filteredContacts = contacts.filter((contact) =>
+  contact.name && contact.name.toLowerCase().includes(filter.toLowerCase())
+);
 
   return (
     <div>
@@ -70,3 +67,4 @@ export function App() {
     </div>
   );
 }
+
