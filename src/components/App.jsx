@@ -1,53 +1,34 @@
+
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact, deleteContact } from '../redux/ContactSlice';
+import { deleteContact } from '../redux/ContactSlice';
 import { setFilter, selectFilter } from '../redux/FilterSlice';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
 import { ContactForm } from './ContactForm/ContactForm';
 import { nanoid } from 'nanoid';
 
-function generateUniqueId() {
-  return nanoid();
-}
-
 export function App() {
   const contacts = useSelector((state) => state.contacts.contacts);
   const filter = useSelector(selectFilter) || ''; 
   const dispatch = useDispatch();
 
+  const generateUniqueId = () => {
+    return nanoid();
+  };
+
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
-  const handleFilterChange = (e) => {
-    dispatch(setFilter(e.target.value));
-  };
-
-  const handleDeleteContact = (contactId) => {
-    dispatch(deleteContact(contactId));
-  };
-
-  const handleAddContact = (values, { resetForm }) => {
-    const { name, number } = values;
-    const newContact = { id: generateUniqueId(), name, number };
-    
-    dispatch(addContact(newContact));
-    resetForm();
-  };
-
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name && contact.name.toLowerCase().includes(filter && filter.toLowerCase())
-  );
-
   return (
     <div>
       <h1>Phonebook</h1>
-      <ContactForm AddContact={handleAddContact} />
+      <ContactForm generateUniqueId={generateUniqueId} /> 
 
       <h2>Contacts</h2>
-      <Filter filter={filter} onChange={handleFilterChange} />
-      <ContactList contacts={filteredContacts} DeleteContact={handleDeleteContact} />
+      <Filter filter={filter} onChange={(value) => dispatch(setFilter(value))} />
+      <ContactList contacts={contacts} onDeleteContact={(contactId) => dispatch(deleteContact(contactId))} filter={filter} />
     </div>
   );
 }

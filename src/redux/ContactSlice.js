@@ -13,7 +13,17 @@ const contactsSlice = createSlice({
   },
   reducers: {
     addContact: (state, action) => {
-      state.contacts.push(action.payload);
+      const { name, number } = action.payload;
+
+      const isDuplicate = state.contacts.some(
+        (contact) => contact.name.toLowerCase() === name.toLowerCase() && contact.number === number
+      );
+
+      if (!isDuplicate) {
+        state.contacts.push({ id: nanoid(), name, number });
+      } else {
+        alert('Contact already exists.');
+      }
     },
     deleteContact: (state, action) => {
       state.contacts = state.contacts.filter((contact) => contact.id !== action.payload);
