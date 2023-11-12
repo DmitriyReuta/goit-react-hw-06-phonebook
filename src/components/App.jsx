@@ -13,7 +13,7 @@ function generateUniqueId() {
 
 export function App() {
   const contacts = useSelector((state) => state.contacts.contacts);
-  const filter = useSelector((state) => state.contacts.filter);
+  const filter = useSelector((state) => state.contacts.filter) || '';
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export function App() {
 };
 
  const filteredContacts = contacts.filter((contact) =>
-  contact.name && contact.name.toLowerCase().includes(filter.toLowerCase())
+  contact.name && contact.name.toLowerCase().includes(filter && filter.toLowerCase())
 );
 
   return (
