@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContact, deleteContact } from '../redux/ContactSlice';
 import { setFilter } from '../redux/FilterSlice'; 
 import { Filter } from './Filter/Filter';
@@ -36,26 +36,16 @@ export function App() {
   };
 
   const handleAddContact = (values, { resetForm }) => {
-  const { name, number } = values;
-
-  if (contacts.some((contact) => contact.name === name)) {
-    alert(`${name} is already in contacts.`);
-    return;
-  }
-
-  const newContact = {
-    id: generateUniqueId(),
-    name,
-    number,
+    const { name, number } = values;
+    const newContact = { id: generateUniqueId(), name, number };
+    
+    dispatch(addContact(newContact));
+    resetForm();
   };
 
-  dispatch(addContact(newContact));
-  resetForm();
-};
-
- const filteredContacts = contacts.filter((contact) =>
-  contact.name && contact.name.toLowerCase().includes(filter && filter.toLowerCase())
-);
+  const filteredContacts = contacts.filter((contact) =>
+    contact.name && contact.name.toLowerCase().includes(filter && filter.toLowerCase())
+  );
 
   return (
     <div>
@@ -68,4 +58,3 @@ export function App() {
     </div>
   );
 }
-
