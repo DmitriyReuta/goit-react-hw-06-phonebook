@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addContact, deleteContact } from '../redux/ContactSlice';
-import { setFilter } from '../redux/FilterSlice'; 
+import { setFilter, selectFilter } from '../redux/FilterSlice';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
 import { ContactForm } from './ContactForm/ContactForm';
@@ -13,7 +13,7 @@ function generateUniqueId() {
 
 export function App() {
   const contacts = useSelector((state) => state.contacts.contacts);
-  const filter = useSelector((state) => state.contacts.filter) || '';
+  const filter = useSelector(selectFilter) || ''; 
   const dispatch = useDispatch();
 
   useEffect(() => {
